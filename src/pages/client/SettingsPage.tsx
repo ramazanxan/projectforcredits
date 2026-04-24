@@ -7,9 +7,11 @@ import { useAppStore } from '@/store/appStore'
 
 export function SettingsPage() {
   const { t } = useTranslation()
+  const theme = useAppStore((state) => state.theme)
   const soundEnabled = useAppStore((state) => state.soundEnabled)
   const toggleTheme = useAppStore((state) => state.toggleTheme)
   const toggleSound = useAppStore((state) => state.toggleSound)
+  const isLightTheme = theme === 'aurora'
 
   return (
     <AppShell role="client">
@@ -21,9 +23,18 @@ export function SettingsPage() {
           <p className="mt-3 text-[var(--text-muted)]">
             Переключает цветовые акценты и фон интерфейса.
           </p>
-          <button type="button" className="theme-switch mt-6" onClick={toggleTheme}>
+          <button
+            type="button"
+            className="theme-switch mt-6"
+            onClick={toggleTheme}
+            aria-pressed={isLightTheme}
+            aria-label={isLightTheme ? 'Светлая тема включена' : 'Тёмная тема включена'}
+          >
             <span />
           </button>
+          <p className="mt-3 text-sm font-medium text-[var(--text-primary)]">
+            Сейчас: {isLightTheme ? 'Светлая' : 'Тёмная'}
+          </p>
         </GlassCard>
 
         <GlassCard>

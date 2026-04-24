@@ -5,6 +5,10 @@
   --bg-primary: #050b18;
   --bg-secondary: #0d1626;
   --bg-glass: rgba(255, 255, 255, 0.04);
+  --bg-gradient-start: #07111f;
+  --bg-gradient-end: #040912;
+  --bg-radial-left: rgba(0, 229, 195, 0.1);
+  --bg-radial-right: rgba(57, 255, 20, 0.08);
   --accent-cyan: #00e5c3;
   --accent-green: #39ff14;
   --accent-glow: rgba(0, 229, 195, 0.25);
@@ -27,11 +31,20 @@
 }
 
 :root[data-theme='aurora'] {
-  --bg-primary: #061120;
-  --bg-secondary: #10203a;
-  --bg-glass: rgba(255, 255, 255, 0.05);
-  --accent-glow: rgba(57, 255, 20, 0.22);
-  --border: rgba(57, 255, 20, 0.18);
+  --bg-primary: #eef5ff;
+  --bg-secondary: #dfeaf9;
+  --bg-glass: rgba(255, 255, 255, 0.86);
+  --bg-gradient-start: #fbfdff;
+  --bg-gradient-end: #ddeafb;
+  --bg-radial-left: rgba(0, 132, 255, 0.18);
+  --bg-radial-right: rgba(0, 229, 195, 0.14);
+  --accent-cyan: #0076f5;
+  --accent-green: #00b894;
+  --accent-glow: rgba(0, 118, 245, 0.25);
+  --text-primary: #10233f;
+  --text-muted: #4d6688;
+  --border: rgba(0, 118, 245, 0.22);
+  --shadow-xl: 0 22px 52px rgba(16, 35, 63, 0.12);
 }
 
 *,
@@ -53,9 +66,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at top left, rgba(0, 229, 195, 0.1), transparent 34%),
-    radial-gradient(circle at 90% 10%, rgba(57, 255, 20, 0.08), transparent 26%),
-    linear-gradient(180deg, #07111f 0%, var(--bg-primary) 48%, #040912 100%);
+    radial-gradient(circle at top left, var(--bg-radial-left), transparent 34%),
+    radial-gradient(circle at 90% 10%, var(--bg-radial-right), transparent 26%),
+    linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-primary) 48%, var(--bg-gradient-end) 100%);
 }
 
 body::before {
@@ -431,6 +444,10 @@ select.field-input {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 200ms ease;
 }
 
 .theme-switch span {
@@ -445,6 +462,12 @@ select.field-input {
 
 :root[data-theme='aurora'] .theme-switch span {
   transform: translateX(24px);
+}
+
+:root[data-theme='aurora'] .theme-switch {
+  border-color: rgba(0, 118, 245, 0.32);
+  background: rgba(0, 118, 245, 0.12);
+  box-shadow: 0 0 18px rgba(0, 118, 245, 0.22);
 }
 
 .language-switch {

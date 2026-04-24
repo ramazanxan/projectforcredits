@@ -12,23 +12,17 @@ import { LoadingScreen } from '@/components/common/LoadingScreen'
 import { PublicHeader } from '@/components/layout/PublicHeader'
 import { getDefaultRoute, useAppStore } from '@/store/appStore'
 
-const DEMO_ACCOUNTS = [
-  { email: 'client@neurobank.ai', hint: 'Кабинет клиента' },
-  { email: 'moderator@neurobank.ai', hint: 'Проверка заявок' },
-  { email: 'it@neurobank.ai', hint: 'ИТ-панель' },
-  { email: 'bank@neurobank.ai', hint: 'Панель банка' },
-]
-
 export function LoginPage() {
   const { t } = useTranslation()
   const auth = useAppStore((state) => state.auth)
   const setAuth = useAppStore((state) => state.setAuth)
   const navigate = useNavigate()
   const location = useLocation()
-  const [email, setEmail] = useState('client@neurobank.ai')
-  const [password, setPassword] = useState('demo1234')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   if (auth) {
     return <Navigate to={getDefaultRoute(auth.user.role)} replace />
@@ -70,18 +64,23 @@ export function LoginPage() {
               <p className="mt-5 max-w-xl text-lg text-[var(--text-muted)]">{t('auth.login.text')}</p>
             </div>
 
-            <div className="mt-10 grid gap-3 sm:grid-cols-2">
-              {DEMO_ACCOUNTS.map((account) => (
-                <button
-                  key={account.email}
-                  type="button"
-                  onClick={() => setEmail(account.email)}
-                  className="rounded-[20px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4 text-left transition hover:border-[var(--border)] hover:bg-[rgba(255,255,255,0.06)]"
-                >
-                  <p className="font-medium text-[var(--text-primary)]">{account.email}</p>
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">{account.hint}</p>
-                </button>
-              ))}
+            <div className="mt-8 grid gap-3">
+              <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <span className="neural-pulse h-2.5 w-2.5 !animate-none bg-[var(--accent-cyan)] shadow-[0_0_0_6px_rgba(0,229,195,0.2)]" />
+                  <p className="text-sm font-medium text-[var(--text-primary)]">Сервис активен 24/7</p>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Безопасность</p>
+                  <p className="mt-2 text-sm text-[var(--text-primary)]">Защищенное подключение и контроль доступа</p>
+                </div>
+                <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Скоринг</p>
+                  <p className="mt-2 text-sm text-[var(--text-primary)]">Решение по заявке за несколько минут</p>
+                </div>
+              </div>
             </div>
           </GlassCard>
 
@@ -100,26 +99,65 @@ export function LoginPage() {
               <Field label={t('auth.login.email')}>
                 <input
                   className="field-input"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+                  placeholder="example@gmail.com"
+                  autoComplete="new-password"
+                  name="auth_login_identifier"
                   required
                 />
               </Field>
               <Field label={t('auth.login.password')}>
-                <input
-                  className="field-input"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <input
+                    className="field-input pr-14 placeholder:text-[var(--text-muted)] placeholder:opacity-60"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="********"
+                    autoComplete="new-password"
+                    name="auth_login_password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                  >
+                    {showPassword ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          d="M3 3L21 21M10.58 10.58C10.21 10.95 10 11.46 10 12C10 13.1 10.9 14 12 14C12.54 14 13.05 13.79 13.42 13.42M16.24 16.24C14.91 16.86 13.47 17.2 12 17.2C7.5 17.2 3.73 14.3 2 12C2.84 10.88 3.95 9.8 5.25 8.93M9.88 6.28C10.58 6.1 11.29 6 12 6C16.5 6 20.27 8.9 22 11.2C21.31 12.12 20.5 13 19.59 13.8"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          d="M2 12C3.73 9.7 7.5 6.8 12 6.8C16.5 6.8 20.27 9.7 22 12C20.27 14.3 16.5 17.2 12 17.2C7.5 17.2 3.73 14.3 2 12Z"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </Field>
 
               {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
 
               <div className="flex flex-wrap gap-3 pt-3">
-                <Button type="submit">{t('auth.login.action')}</Button>
+                <Button type="submit">
+                  {t('auth.login.action')}
+                </Button>
                 <Link to="/register" className={buttonClasses('secondary')}>
                   {t('auth.login.register')}
                 </Link>

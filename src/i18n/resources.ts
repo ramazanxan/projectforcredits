@@ -1,7 +1,7 @@
 const ru = {
   common: {
     brand: 'NeuroBank',
-    tagline: 'Кредит. Быстро. Понятно.',
+    tagline: 'Сервис кредитного скоринга на базе ИИ',
     loading: 'Загружаем интерфейс',
     calculate: 'Рассчитать',
     retry: 'Попробовать снова',
@@ -14,9 +14,9 @@ const ru = {
     all: 'Все',
     comingSoon: 'Раздел готов к подключению API',
     updateOnRefresh: 'Обновится после перезагрузки',
-    demoMode: 'Тестовый режим',
+    demoMode: 'Рабочий доступ',
     language: 'Язык',
-    theme: 'Темная тема',
+    theme: 'Тема',
     support: 'Поддержка',
     logout: 'Выйти',
     dashboard: 'Личный кабинет',
@@ -123,8 +123,8 @@ const ru = {
   auth: {
     login: {
       title: 'Вход в NeuroBank',
-      text: 'Введите почту и пароль. После входа система сама откроет нужный кабинет. Для демонстрации можно выбрать тестовый аккаунт ниже.',
-      email: 'Почта',
+      text: 'Введите рабочую почту и пароль. После входа система откроет ваш кабинет и актуальные задачи.',
+      email: 'Почта или номер',
       password: 'Пароль',
       action: 'Войти',
       register: 'Создать аккаунт',
@@ -281,12 +281,12 @@ const ru = {
 }
 
 const en = structuredClone(ru)
-en.common.tagline = 'Credit. Fast. Clear.'
+en.common.tagline = 'AI-powered credit scoring service'
 en.auth.login.title = 'Sign in to NeuroBank'
 en.support.title = 'Support and FAQ'
 
 const kz = structuredClone(ru)
-kz.common.tagline = 'Несие. Жылдам. Тусиникти.'
+kz.common.tagline = 'AI негiзiндегi кредит скоринг сервисi'
 kz.auth.login.title = 'NeuroBank-ке кiру'
 kz.support.title = 'Колдау жане FAQ'
 

@@ -31,11 +31,13 @@ const APPLY_SUBMENU = [
 export function Sidebar({ role, onNavigate }: SidebarProps) {
   const { t } = useTranslation()
   const auth = useAppStore((state) => state.auth)
+  const theme = useAppStore((state) => state.theme)
   const toggleTheme = useAppStore((state) => state.toggleTheme)
   const logout = useAppStore((state) => state.logout)
   const location = useLocation()
   const [applyOpen, setApplyOpen] = useState(location.pathname.startsWith('/client/apply'))
   const displayName = auth?.user.name?.split(/\s+/)[0] ?? 'Пользователь'
+  const isLightTheme = theme === 'aurora'
 
   const items = useMemo(
     () => t(`nav.${role}`, { returnObjects: true }) as NavItem[],
@@ -149,8 +151,14 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
       <GlassCard className="flex-shrink-0 space-y-4">
         <div className="space-y-3">
           <label className="flex items-center justify-between gap-3 text-sm text-[var(--text-primary)]">
-            <span>{t('common.theme')}</span>
-            <button type="button" onClick={toggleTheme} className="theme-switch">
+            <span>{isLightTheme ? 'Светлая тема' : 'Тёмная тема'}</span>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="theme-switch"
+              aria-pressed={isLightTheme}
+              aria-label={isLightTheme ? 'Светлая тема включена' : 'Тёмная тема включена'}
+            >
               <span />
             </button>
           </label>

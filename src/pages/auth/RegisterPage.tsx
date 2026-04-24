@@ -11,8 +11,6 @@ import { PublicHeader } from '@/components/layout/PublicHeader'
 import { getDefaultRoute, useAppStore } from '@/store/appStore'
 import { cx } from '@/utils/format'
 
-const INCOME_OPTIONS = ['До 300 000 сом', '300 000 - 700 000 сом', '700 000 - 1 500 000 сом', 'Свыше 1 500 000 сом']
-
 export function RegisterPage() {
   const { t } = useTranslation()
   const auth = useAppStore((state) => state.auth)
@@ -20,13 +18,23 @@ export function RegisterPage() {
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [form, setForm] = useState({
     fullName: '',
     email: '',
     phone: '+996',
-    incomeBand: INCOME_OPTIONS[1],
+    incomeBand: '',
     password: '',
   })
+  const passwordRules = {
+    minLength: form.password.length >= 8,
+    upperCase: /[A-Z]/.test(form.password),
+    lowerCase: /[a-z]/.test(form.password),
+    number: /\d/.test(form.password),
+    special: /[^A-Za-z0-9]/.test(form.password),
+  }
+  const isPasswordStrong = Object.values(passwordRules).every(Boolean)
 
   const steps = useMemo(
     () => t('auth.register.steps', { returnObjects: true }) as string[],
@@ -38,13 +46,26 @@ export function RegisterPage() {
   }
 
   async function submit() {
-    setLoading(true)
-    const result = await api.auth.register(form)
-    setAuth({
-      token: result.token,
-      user: result.user,
-    })
-    navigate(getDefaultRoute(result.role), { replace: true })
+    setError('')
+
+    if (!isPasswordStrong) {
+      setError('Ошибка: пароль не соответствует строгим требованиям безопасности')
+      return
+    }
+
+    try {
+      setLoading(true)
+      const result = await api.auth.register(form)
+      setAuth({
+        token: result.token,
+        user: result.user,
+      })
+      navigate(getDefaultRoute(result.role), { replace: true })
+    } catch {
+      setError('Ошибка: регистрация отклонена. Проверьте данные и требования к паролю')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -97,6 +118,7 @@ export function RegisterPage() {
                     className="field-input"
                     type="email"
                     value={form.email}
+                    placeholder="example@gmail.com"
                     onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
                   />
                 </Field>
@@ -113,33 +135,81 @@ export function RegisterPage() {
                   />
                 </Field>
                 <Field label={t('auth.register.incomeBand')}>
-                  <select
+                  <input
                     className="field-input"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Например: 500000"
                     value={form.incomeBand}
                     onChange={(event) =>
                       setForm((current) => ({ ...current, incomeBand: event.target.value }))
                     }
-                  >
-                    {INCOME_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </Field>
               </div>
             ) : null}
 
             {step === 2 ? (
               <Field label={t('auth.login.password')}>
-                <input
-                  className="field-input"
-                  type="password"
-                  value={form.password}
-                  onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-                />
+                <div className="relative">
+                  <input
+                    className="field-input pr-14"
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    placeholder="Введите пароль"
+                    onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                  >
+                    {showPassword ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          d="M3 3L21 21M10.58 10.58C10.21 10.95 10 11.46 10 12C10 13.1 10.9 14 12 14C12.54 14 13.05 13.79 13.42 13.42M16.24 16.24C14.91 16.86 13.47 17.2 12 17.2C7.5 17.2 3.73 14.3 2 12C2.84 10.88 3.95 9.8 5.25 8.93M9.88 6.28C10.58 6.1 11.29 6 12 6C16.5 6 20.27 8.9 22 11.2C21.31 12.12 20.5 13 19.59 13.8"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          d="M2 12C3.73 9.7 7.5 6.8 12 6.8C16.5 6.8 20.27 9.7 22 12C20.27 14.3 16.5 17.2 12 17.2C7.5 17.2 3.73 14.3 2 12Z"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <ul className="mt-3 grid gap-1 text-xs text-[var(--text-muted)]">
+                  <li className={passwordRules.minLength ? 'text-[var(--accent-cyan)]' : ''}>
+                    Минимум 8 символов
+                  </li>
+                  <li className={passwordRules.upperCase ? 'text-[var(--accent-cyan)]' : ''}>
+                    Хотя бы одна заглавная буква
+                  </li>
+                  <li className={passwordRules.lowerCase ? 'text-[var(--accent-cyan)]' : ''}>
+                    Хотя бы одна строчная буква
+                  </li>
+                  <li className={passwordRules.number ? 'text-[var(--accent-cyan)]' : ''}>
+                    Хотя бы одна цифра
+                  </li>
+                  <li className={passwordRules.special ? 'text-[var(--accent-cyan)]' : ''}>
+                    Хотя бы один спецсимвол
+                  </li>
+                </ul>
               </Field>
             ) : null}
+
+            {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
 
             <div className="flex flex-wrap gap-3">
               {step > 0 ? (
@@ -152,7 +222,9 @@ export function RegisterPage() {
                   {t('common.continue')}
                 </Button>
               ) : (
-                <Button onClick={submit}>{t('auth.register.action')}</Button>
+                <Button onClick={submit}>
+                  {t('auth.register.action')}
+                </Button>
               )}
             </div>
           </GlassCard>
