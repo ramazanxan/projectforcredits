@@ -14,6 +14,16 @@ const SupportPage = lazy(async () => {
   return { default: module.SupportPage }
 })
 
+const PrivacyPolicyPage = lazy(async () => {
+  const module = await import('@/pages/PrivacyPolicyPage')
+  return { default: module.PrivacyPolicyPage }
+})
+
+const TermsPage = lazy(async () => {
+  const module = await import('@/pages/TermsPage')
+  return { default: module.TermsPage }
+})
+
 const LoginPage = lazy(async () => {
   const module = await import('@/pages/auth/LoginPage')
   return { default: module.LoginPage }
@@ -22,6 +32,11 @@ const LoginPage = lazy(async () => {
 const RegisterPage = lazy(async () => {
   const module = await import('@/pages/auth/RegisterPage')
   return { default: module.RegisterPage }
+})
+
+const ProfilePage = lazy(async () => {
+  const module = await import('@/pages/ProfilePage')
+  return { default: module.ProfilePage }
 })
 
 const ClientDashboardPage = lazy(async () => {
@@ -114,8 +129,18 @@ export function AppRouter() {
   const element = useRoutes([
     { path: '/', element: <LandingPage /> },
     { path: '/support', element: <SupportPage /> },
+    { path: '/privacy-policy', element: <PrivacyPolicyPage /> },
+    { path: '/terms', element: <TermsPage /> },
     { path: '/login', element: <LoginPage /> },
     { path: '/register', element: <RegisterPage /> },
+    {
+      path: '/profile',
+      element: (
+        <ProtectedRoute roles={['client', 'moderator', 'admin_it', 'admin_bank']}>
+          <ProfilePage />
+        </ProtectedRoute>
+      ),
+    },
     {
       path: '/client',
       element: (

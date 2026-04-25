@@ -31,7 +31,7 @@ export const demoProfiles: Record<Role, Omit<AuthUser, 'email'>> = {
     id: 'usr-admin-it',
     name: 'Никита',
     role: 'admin_it',
-    title: 'ИТ-панель',
+    title: 'IT панель',
     avatar: 'NS',
   },
   admin_bank: {
@@ -251,7 +251,7 @@ export const systemLogs: SystemLog[] = [
   {
     id: 'log-2',
     level: 'warning',
-    message: 'Уведомления появятся после обновления страницы',
+    message: 'Shadow-модель: дрифт по признаку inquiries_6m выше порога наблюдения',
     timestamp: '11:43:55',
   },
   {

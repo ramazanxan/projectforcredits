@@ -16,17 +16,16 @@ export function AppShell({ role, children }: AppShellProps) {
   const auth = useAppStore((state) => state.auth)
   const mobileMenuOpen = useAppStore((state) => state.mobileMenuOpen)
   const setMobileMenuOpen = useAppStore((state) => state.setMobileMenuOpen)
-  const batchRuns = useAppStore((state) => state.batchRuns)
   const displayName = auth?.user.name?.split(/\s+/)[0] ?? t('common.brand')
   const subtitle = auth?.user.title ?? t(`roles.${role}`)
 
   return (
     <div className="min-h-screen">
-      <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:block lg:w-[320px] lg:overflow-y-auto lg:p-5">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:block lg:w-[340px] lg:overflow-y-auto lg:p-5">
         <Sidebar role={role} />
       </div>
 
-      <div className="lg:pl-[320px]">
+      <div className="min-w-0 lg:pl-[340px]">
         <header className="sticky top-[2px] z-40 px-4 py-4 md:px-8">
           <div className="glass-panel flex items-center justify-between rounded-[28px] px-4 py-4">
             <div className="flex items-center gap-3">
@@ -52,18 +51,13 @@ export function AppShell({ role, children }: AppShellProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <Badge tone="green">{t(`roles.${role}`)}</Badge>
-              {role === 'admin_it' || batchRuns.length > 0 ? (
-                <Badge tone="amber">
-                  {t('common.updateOnRefresh')} • {batchRuns.length}
-                </Badge>
-              ) : null}
             </div>
           </div>
         </header>
 
-        <main className="space-y-8 px-4 pb-10 md:px-8 md:pb-14">{children}</main>
+        <main className="min-w-0 space-y-8 px-4 pb-10 md:px-8 md:pb-14">{children}</main>
       </div>
 
       <div

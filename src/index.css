@@ -199,6 +199,16 @@ textarea {
   box-shadow: 0 0 0 4px rgba(0, 229, 195, 0.08);
 }
 
+input[type='number'].field-input::-webkit-outer-spin-button,
+input[type='number'].field-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'].field-input {
+  appearance: textfield;
+}
+
 select.field-input,
 select.field-input option {
   color: var(--text-primary);
@@ -318,7 +328,7 @@ select.field-input {
 }
 
 .landing-scroll {
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y proximity;
   overflow-x: clip;
 }
 
@@ -432,8 +442,54 @@ select.field-input {
   color: var(--text-muted);
 }
 
+.partners-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: grab;
+  scrollbar-width: thin;
+}
+
+.partners-scroll:active {
+  cursor: grabbing;
+}
+
+.partners-scroll-track {
+  display: inline-flex;
+  gap: 1.3rem;
+  min-width: max-content;
+  padding: 0.8rem 0.1rem;
+  white-space: nowrap;
+}
+
+.partners-scroll-track span {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 .auth-layout {
   position: relative;
+}
+
+.floating-bank-decor {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.floating-bank-item {
+  position: absolute;
+  color: var(--accent-cyan);
+  opacity: 0.2;
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+  animation-name: bankFloat;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 
 .theme-switch {
@@ -703,6 +759,21 @@ select.field-input {
   }
 }
 
+@keyframes bankFloat {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.16;
+  }
+  50% {
+    transform: translate3d(0, -32px, 0) rotate(8deg);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.16;
+  }
+}
+
 @media (pointer: fine) {
   html[data-custom-cursor='true'],
   html[data-custom-cursor='true'] * {
@@ -727,5 +798,9 @@ select.field-input {
   .hero-orb-right {
     width: 7rem;
     height: 7rem;
+  }
+
+  .floating-bank-item {
+    opacity: 0.14;
   }
 }

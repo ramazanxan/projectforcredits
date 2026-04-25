@@ -53,6 +53,49 @@ export interface CreditProduct {
   perks: string[]
 }
 
+/** Ключи расширенного профиля (свободный текст по каждому фактору). */
+export const SCORE_EXTENDED_KEYS = [
+  'socio_demographic',
+  'country_birth_work',
+  'workplace_profession',
+  'education',
+  'marital',
+  'political_views',
+  'country_macro',
+  'legal',
+  'capital_residence',
+] as const
+
+export type ScoreExtendedKey = (typeof SCORE_EXTENDED_KEYS)[number]
+
+export type ScoreExtendedParams = Record<ScoreExtendedKey, string>
+
+const EXTENDED_TEXT_MAX = 2000
+
+export function defaultScoreExtendedParams(): ScoreExtendedParams {
+  return Object.fromEntries(SCORE_EXTENDED_KEYS.map((key) => [key, ''])) as ScoreExtendedParams
+}
+
+/** Нормализация из API/CSV (старые числа 0–3 превращаем в строку). */
+export function normalizeExtendedParams(raw: unknown): ScoreExtendedParams {
+  const defaults = defaultScoreExtendedParams()
+  if (!raw || typeof raw !== 'object') {
+    return defaults
+  }
+
+  const obj = raw as Partial<Record<ScoreExtendedKey, unknown>>
+  const next = { ...defaults }
+  for (const key of SCORE_EXTENDED_KEYS) {
+    const v = obj[key]
+    if (typeof v === 'string') {
+      next[key] = v.slice(0, EXTENDED_TEXT_MAX)
+    } else if (typeof v === 'number' && Number.isFinite(v)) {
+      next[key] = v === 0 ? '' : String(Math.trunc(v))
+    }
+  }
+  return next
+}
+
 export interface ScoreFormData {
   age: number
   monthly_income: number
@@ -62,6 +105,7 @@ export interface ScoreFormData {
   interest_rate: number
   past_due_30d: number
   inquiries_6m: number
+  extended: ScoreExtendedParams
 }
 
 export interface ScoreResult {

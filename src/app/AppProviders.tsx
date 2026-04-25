@@ -1,4 +1,6 @@
 import { type PropsWithChildren, useEffect } from 'react'
+import { CookieConsent } from '@/components/common/CookieConsent'
+import { FloatingBankDecor } from '@/components/effects/FloatingBankDecor'
 import i18n from '@/i18n'
 import { useAppStore } from '@/store/appStore'
 
@@ -36,6 +38,8 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <>
       {children}
+      <FloatingBankDecor />
+      <CookieConsent />
       {easterEggVisible ? (
         <div className="pointer-events-none fixed bottom-6 right-6 z-[80]">
           <div className="glass-panel flex items-center gap-3 rounded-full px-4 py-3 shadow-[0_0_40px_rgba(0,229,195,0.35)]">

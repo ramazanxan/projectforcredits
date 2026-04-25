@@ -106,7 +106,6 @@ export function BatchTestPage() {
     setLogs([
       `[boot] подготовка записей: ${limitedRows.length}`,
       `[model] выбрана модель: ${model}`,
-      '[hint] уведомления появятся после перезагрузки страницы',
     ])
 
     let processed = 0
@@ -224,23 +223,12 @@ export function BatchTestPage() {
   return (
     <AppShell role="admin_it">
       <PageHero
-        eyebrow="ИТ"
         title={t('adminIt.batch.title')}
         description={t('adminIt.batch.text')}
-        aside={
-          <GlassCard className="space-y-4">
-            <Badge tone="amber">{t('common.updateOnRefresh')}</Badge>
-            <p className="text-sm text-[var(--text-muted)]">
-              В demo-режиме batch-результаты живут в памяти, а уведомления о прогоне считаются
-              доступными только после перезагрузки интерфейса.
-            </p>
-            <p className="font-mono text-sm text-[var(--text-primary)]">Файл: {fileName}</p>
-          </GlassCard>
-        }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_0.92fr]">
-        <GlassCard className="space-y-5">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[1fr_minmax(0,1fr)]">
+        <GlassCard className="min-w-0 space-y-5">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="eyebrow">{t('adminIt.batch.uploadTitle')}</p>
@@ -250,6 +238,7 @@ export function BatchTestPage() {
             </div>
             {missingColumns.length ? <Badge tone="red">Ошибка схемы</Badge> : <Badge>Схема проверена</Badge>}
           </div>
+          <p className="font-mono text-sm text-[var(--text-muted)]">Файл: {fileName}</p>
 
           <div
             {...dropzone.getRootProps()}
@@ -319,7 +308,7 @@ export function BatchTestPage() {
           </div>
         </GlassCard>
 
-        <GlassCard className="space-y-5">
+        <GlassCard className="min-w-0 space-y-5">
           <p className="eyebrow">{t('adminIt.batch.runTitle')}</p>
 
           <label className="flex flex-col gap-3">
@@ -378,8 +367,8 @@ export function BatchTestPage() {
         </GlassCard>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <GlassCard className="space-y-5">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <GlassCard className="min-w-0 space-y-5">
           <div className="flex items-center justify-between">
             <div>
               <p className="eyebrow">{t('adminIt.batch.progressTitle')}</p>
@@ -409,7 +398,7 @@ export function BatchTestPage() {
         </GlassCard>
 
         {result ? (
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid min-w-0 gap-5 md:grid-cols-2">
             <KpiCard item={{ id: 'roc', label: 'ROC-AUC', value: result.metrics.rocAuc.toFixed(3) }} />
             <KpiCard item={{ id: 'pr', label: 'PR-AUC', value: result.metrics.prAuc.toFixed(3) }} />
             <KpiCard
@@ -418,7 +407,7 @@ export function BatchTestPage() {
             <KpiCard item={{ id: 'f1', label: 'F1-Score', value: result.metrics.f1.toFixed(3) }} />
           </div>
         ) : (
-          <GlassCard className="flex items-center justify-center">
+          <GlassCard className="flex min-w-0 items-center justify-center">
             <p className="text-[var(--text-muted)]">Запустите тест, чтобы увидеть метрики</p>
           </GlassCard>
         )}

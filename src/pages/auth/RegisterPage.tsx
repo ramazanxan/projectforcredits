@@ -35,6 +35,10 @@ export function RegisterPage() {
     special: /[^A-Za-z0-9]/.test(form.password),
   }
   const isPasswordStrong = Object.values(passwordRules).every(Boolean)
+  const isFullNameValid = /^[A-Za-zА-Яа-яЁё\s-]+$/.test(form.fullName.trim()) && form.fullName.trim().length >= 3
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())
+  const isPhoneValid = /^\+996\d{9}$/.test(form.phone)
+  const isIncomeValid = /^\d+$/.test(form.incomeBand.trim()) && Number(form.incomeBand) > 0
 
   const steps = useMemo(
     () => t('auth.register.steps', { returnObjects: true }) as string[],
@@ -61,11 +65,64 @@ export function RegisterPage() {
         user: result.user,
       })
       navigate(getDefaultRoute(result.role), { replace: true })
-    } catch {
-      setError('Ошибка: регистрация отклонена. Проверьте данные и требования к паролю')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : ''
+      if (message === 'ACCOUNT_ALREADY_EXISTS') {
+        setError('Аккаунт с такой почтой или номером уже существует')
+      } else {
+        setError('Ошибка: регистрация отклонена. Проверьте данные и требования к паролю')
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  function handleNextStep() {
+    setError('')
+
+    if (step === 0) {
+      if (!form.fullName.trim() && !form.email.trim()) {
+        setError('Заполните поле ФИО и почту')
+        return
+      }
+      if (!form.fullName.trim()) {
+        setError('Заполните поле ФИО')
+        return
+      }
+      if (!form.email.trim()) {
+        setError('Заполните поле электронной почты')
+        return
+      }
+      if (!isFullNameValid) {
+        setError('ФИО должно содержать только буквы')
+        return
+      }
+      if (!isEmailValid) {
+        setError('Введите корректную электронную почту')
+        return
+      }
+    }
+
+    if (step === 1) {
+      if (!form.phone.trim() || form.phone === '+996') {
+        setError('Заполните поле телефона')
+        return
+      }
+      if (!form.incomeBand.trim()) {
+        setError('Заполните поле дохода')
+        return
+      }
+      if (!isPhoneValid) {
+        setError('Телефон должен быть в формате +996 и содержать 9 цифр')
+        return
+      }
+      if (!isIncomeValid) {
+        setError('Введите корректный доход (только цифры)')
+        return
+      }
+    }
+
+    setStep((current) => current + 1)
   }
 
   return (
@@ -110,10 +167,14 @@ export function RegisterPage() {
                   <input
                     className="field-input"
                     value={form.fullName}
-                    onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))}
+                    onChange={(event) => {
+                      const nextValue = event.target.value.replace(/[^A-Za-zА-Яа-яЁё\s-]/g, '')
+                      setForm((current) => ({ ...current, fullName: nextValue }))
+                    }}
+                    placeholder="Иванов Иван Иванович"
                   />
                 </Field>
-                <Field label={t('auth.login.email')}>
+                <Field label={t('auth.register.email')}>
                   <input
                     className="field-input"
                     type="email"
@@ -131,7 +192,12 @@ export function RegisterPage() {
                   <input
                     className="field-input"
                     value={form.phone}
-                    onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
+                    placeholder="+996..."
+                    onChange={(event) => {
+                      const digits = event.target.value.replace(/\D/g, '')
+                      const localDigits = digits.startsWith('996') ? digits.slice(3, 12) : digits.slice(0, 9)
+                      setForm((current) => ({ ...current, phone: `+996${localDigits}` }))
+                    }}
                   />
                 </Field>
                 <Field label={t('auth.register.incomeBand')}>
@@ -153,10 +219,12 @@ export function RegisterPage() {
               <Field label={t('auth.login.password')}>
                 <div className="relative">
                   <input
-                    className="field-input pr-14"
+                    className="field-input pr-14 placeholder:text-[var(--text-muted)] placeholder:opacity-60"
                     type={showPassword ? 'text' : 'password'}
                     value={form.password}
-                    placeholder="Введите пароль"
+                    placeholder="********"
+                    autoComplete="new-password"
+                    name="auth_register_password"
                     onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
                   />
                   <button
@@ -218,7 +286,7 @@ export function RegisterPage() {
                 </Button>
               ) : null}
               {step < steps.length - 1 ? (
-                <Button onClick={() => setStep((current) => current + 1)}>
+                <Button onClick={handleNextStep}>
                   {t('common.continue')}
                 </Button>
               ) : (

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/common/Badge'
 import { BrandMark } from '@/components/common/BrandMark'
 import { LocaleSwitch } from '@/components/common/LocaleSwitch'
+import { NavIcon } from '@/components/common/NavIcon'
 import { buttonClasses } from '@/components/common/buttonStyles'
 import { GlassCard } from '@/components/common/GlassCard'
 import { useAppStore } from '@/store/appStore'
@@ -36,7 +37,7 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
   const logout = useAppStore((state) => state.logout)
   const location = useLocation()
   const [applyOpen, setApplyOpen] = useState(location.pathname.startsWith('/client/apply'))
-  const displayName = auth?.user.name?.split(/\s+/)[0] ?? 'Пользователь'
+  const displayName = auth?.user.name?.trim() || 'Пользователь'
   const isLightTheme = theme === 'aurora'
 
   const items = useMemo(
@@ -45,16 +46,16 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
   )
 
   return (
-    <aside className="flex min-h-full flex-col gap-5">
+    <aside className="flex min-h-full min-w-0 flex-col gap-5">
       <GlassCard className="overflow-hidden p-0">
         <div className="border-b border-[rgba(255,255,255,0.06)] px-5 py-5">
           <Link to="/" className="flex items-center gap-3" onClick={onNavigate}>
             <BrandMark />
-            <div>
+            <div className="min-w-0">
               <p className="font-display text-xl font-bold text-[var(--text-primary)]">
                 {t('common.brand')}
               </p>
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
+              <p className="truncate text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
                 {t('common.tagline')}
               </p>
             </div>
@@ -62,17 +63,25 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
         </div>
 
         <div className="px-5 py-5">
-          <div className="rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] p-5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[rgba(0,229,195,0.12)] font-semibold text-[var(--accent-cyan)]">
-                {auth?.user.avatar ?? 'NB'}
+          <div className="rounded-[24px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] px-5 py-6">
+            <div className="flex flex-col items-stretch gap-4">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[rgba(0,229,195,0.14)] text-base font-semibold tracking-tight text-[var(--accent-cyan)]">
+                {auth?.user.avatar?.startsWith('data:image') ? (
+                  <img src={auth.user.avatar} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="px-1 text-center leading-tight">{auth?.user.avatar ?? 'NB'}</span>
+                )}
               </div>
-              <div>
-                <p className="text-lg font-semibold text-[var(--text-primary)]">{displayName}</p>
-                <p className="text-sm text-[var(--text-muted)]">{auth?.user.title ?? t(`roles.${role}`)}</p>
+              <div className="min-w-0 space-y-1.5">
+                <p className="break-words text-lg font-semibold leading-snug text-[var(--text-primary)]">
+                  {displayName}
+                </p>
+                <p className="break-words text-sm leading-relaxed text-[var(--text-muted)]">
+                  {auth?.user.title ?? t(`roles.${role}`)}
+                </p>
               </div>
+              <Badge className="w-fit">{t(`roles.${role}`)}</Badge>
             </div>
-            <Badge className="mt-4">{t(`roles.${role}`)}</Badge>
           </div>
         </div>
 
@@ -92,8 +101,8 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
                     )}
                   >
                     <span className="flex items-center gap-3">
-                      <span>{item.icon}</span>
-                      {item.label}
+                      <NavIcon name={item.icon} />
+                      <span className="min-w-0 truncate">{item.label}</span>
                     </span>
                     <span className={cx('transition', applyOpen && 'rotate-45')}>+</span>
                   </button>
@@ -139,8 +148,8 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
                     )
                   }
                 >
-                  <span>{item.icon}</span>
-                  {item.label}
+                  <NavIcon name={item.icon} />
+                  <span className="min-w-0 truncate">{item.label}</span>
                 </NavLink>
               )}
             </div>
@@ -167,11 +176,11 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
             <LocaleSwitch compact />
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <Link to="/support" className={buttonClasses('secondary', true)} onClick={onNavigate}>
             {t('common.support')}
           </Link>
-          <button type="button" className={buttonClasses('ghost')} onClick={logout}>
+          <button type="button" className={buttonClasses('ghost', true)} onClick={logout}>
             {t('common.logout')}
           </button>
         </div>

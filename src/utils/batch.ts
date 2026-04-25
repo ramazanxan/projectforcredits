@@ -1,10 +1,11 @@
-import type {
-  BatchInputRow,
-  BatchProcessedRow,
-  BatchRunResult,
-  CurvePoint,
-  HistogramBin,
-  ScoreFormData,
+import {
+  normalizeExtendedParams,
+  type BatchInputRow,
+  type BatchProcessedRow,
+  type BatchRunResult,
+  type CurvePoint,
+  type HistogramBin,
+  type ScoreFormData,
 } from '@/types/domain'
 import { clamp } from '@/utils/format'
 import { calculateScore, SCORE_FIELDS } from '@/utils/scoring'
@@ -252,5 +253,6 @@ function toScoreInput(row: BatchInputRow): ScoreFormData {
     interest_rate: Number(row.interest_rate ?? 0),
     past_due_30d: Number(row.past_due_30d ?? 0),
     inquiries_6m: Number(row.inquiries_6m ?? 0),
+    extended: normalizeExtendedParams(row.extended),
   }
 }

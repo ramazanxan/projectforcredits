@@ -39,11 +39,20 @@ export function LoginPage() {
         token: result.token,
         user: result.user,
       })
+      window.localStorage.setItem('neurobank_mock_email', result.user.email)
+      window.localStorage.setItem('neurobank_mock_token', result.token)
 
       const target = (location.state as { from?: string } | null)?.from
       navigate(target ?? getDefaultRoute(result.role), { replace: true })
-    } catch {
-      setError('Не удалось выполнить вход')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : ''
+      if (message === 'ACCOUNT_NOT_FOUND') {
+        setError('Аккаунт не найден. Сначала зарегистрируйтесь.')
+      } else if (message === 'INVALID_PASSWORD') {
+        setError('Неверный пароль')
+      } else {
+        setError('Не удалось выполнить вход')
+      }
     } finally {
       setLoading(false)
     }
@@ -54,31 +63,31 @@ export function LoginPage() {
       <PublicHeader />
       <div className="auth-layout min-h-screen px-4 pb-12 pt-28 md:px-8">
         {loading ? <LoadingScreen /> : null}
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <GlassCard className="flex flex-col justify-between">
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.12fr_0.88fr]">
+          <GlassCard className="flex flex-col justify-between p-8 md:p-10">
             <div>
               <Badge>{t('common.demoMode')}</Badge>
-              <h1 className="mt-6 font-display text-5xl font-extrabold text-[var(--text-primary)]">
+              <h1 className="mt-6 font-display text-5xl font-extrabold leading-[0.96] text-[var(--text-primary)] md:text-6xl">
                 {t('auth.login.title')}
               </h1>
-              <p className="mt-5 max-w-xl text-lg text-[var(--text-muted)]">{t('auth.login.text')}</p>
+              <p className="mt-6 max-w-2xl text-xl text-[var(--text-muted)]">{t('auth.login.text')}</p>
             </div>
 
-            <div className="mt-8 grid gap-3">
-              <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-4 py-3">
+            <div className="mt-10 grid gap-4">
+              <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-5 py-4">
                 <div className="flex items-center gap-3">
                   <span className="neural-pulse h-2.5 w-2.5 !animate-none bg-[var(--accent-cyan)] shadow-[0_0_0_6px_rgba(0,229,195,0.2)]" />
-                  <p className="text-sm font-medium text-[var(--text-primary)]">Сервис активен 24/7</p>
+                  <p className="text-base font-semibold text-[var(--text-primary)]">Сервис активен 24/7</p>
                 </div>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-5">
                   <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Безопасность</p>
-                  <p className="mt-2 text-sm text-[var(--text-primary)]">Защищенное подключение и контроль доступа</p>
+                  <p className="mt-3 text-lg leading-snug text-[var(--text-primary)]">Защищенное подключение и контроль доступа</p>
                 </div>
-                <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
+                <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-5">
                   <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Скоринг</p>
-                  <p className="mt-2 text-sm text-[var(--text-primary)]">Решение по заявке за несколько минут</p>
+                  <p className="mt-3 text-lg leading-snug text-[var(--text-primary)]">Решение по заявке за несколько минут</p>
                 </div>
               </div>
             </div>
@@ -102,7 +111,7 @@ export function LoginPage() {
                   type="text"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder="example@gmail.com"
+                  placeholder="example@gmail.com или +996..."
                   autoComplete="new-password"
                   name="auth_login_identifier"
                   required

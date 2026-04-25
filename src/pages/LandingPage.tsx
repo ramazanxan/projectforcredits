@@ -53,7 +53,7 @@ export function LandingPage() {
           </div>
           <div className="hero-orb hero-orb-left" />
           <div className="hero-orb hero-orb-right" />
-          <div className="relative z-10 mx-auto grid min-h-[100svh] max-w-7xl items-center gap-10 px-4 pb-16 pt-10 md:px-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="relative z-10 mx-auto grid min-h-[88svh] max-w-7xl items-center gap-10 px-4 pb-16 pt-10 md:px-8 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
               <Reveal>
                 <p className="eyebrow mb-6">{t('landing.hero.eyebrow')}</p>
@@ -93,7 +93,7 @@ export function LandingPage() {
         </section>
 
         <section className="snap-section" id="how">
-          <div className="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-4 py-20 md:px-8">
+          <div className="mx-auto flex min-h-[78svh] max-w-7xl flex-col justify-center px-4 py-16 md:px-8">
             <SectionHeading
               eyebrow={t('landing.how.eyebrow')}
               title={t('landing.how.title')}
@@ -118,7 +118,7 @@ export function LandingPage() {
         </section>
 
         <section className="snap-section" id="products">
-          <div className="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-4 py-20 md:px-8">
+          <div className="mx-auto flex min-h-[78svh] max-w-7xl flex-col justify-center px-4 py-16 md:px-8">
             <SectionHeading
               eyebrow={t('landing.products.eyebrow')}
               title={t('landing.products.title')}
@@ -168,7 +168,7 @@ export function LandingPage() {
         </section>
 
         <section className="snap-section">
-          <div className="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-4 py-20 md:px-8">
+          <div className="mx-auto flex min-h-[78svh] max-w-7xl flex-col justify-center px-4 py-16 md:px-8">
             <SectionHeading
               eyebrow={t('landing.trust.eyebrow')}
               title={t('landing.trust.title')}
@@ -189,7 +189,7 @@ export function LandingPage() {
                 ))}
               </div>
               <Reveal from="right">
-                <GlassCard className="space-y-6">
+                <GlassCard className="mx-auto w-full max-w-[620px] space-y-5 p-5 md:p-6">
                   <div className="grid gap-4">
                     {TRUST_METRICS.map((metric) => (
                       <div key={metric.label} className="space-y-3">
@@ -197,7 +197,7 @@ export function LandingPage() {
                           <span>{metric.label}</span>
                           <span>{metric.value}%</span>
                         </div>
-                        <div className="h-3 overflow-hidden rounded-full bg-[rgba(255,255,255,0.05)]">
+                        <div className="h-2.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.05)]">
                           <div
                             className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent-cyan),var(--accent-green))]"
                             style={{ width: `${metric.value}%` }}
@@ -206,11 +206,16 @@ export function LandingPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="marquee">
-                    <div className="marquee-track">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                      Проведите, чтобы посмотреть партнеров
+                    </p>
+                    <div className="partners-scroll mt-3">
+                      <div className="partners-scroll-track">
                       {[...partnerNames, ...partnerNames].map((name, index) => (
                         <span key={`${name}-${index}`}>{name}</span>
                       ))}
+                      </div>
                     </div>
                   </div>
                 </GlassCard>
@@ -220,7 +225,7 @@ export function LandingPage() {
         </section>
 
         <section className="snap-section" id="community">
-          <div className="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-4 py-20 md:px-8">
+          <div className="mx-auto flex min-h-[78svh] max-w-7xl flex-col justify-center px-4 py-16 md:px-8">
             <SectionHeading
               eyebrow={t('landing.forum.eyebrow')}
               title={t('landing.forum.title')}
@@ -263,7 +268,7 @@ export function LandingPage() {
         </section>
 
         <section className="snap-section">
-          <div className="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-4 py-20 md:px-8">
+          <div className="mx-auto flex min-h-[86svh] max-w-7xl flex-col justify-center px-4 py-16 md:px-8">
             <GlassCard className="relative overflow-hidden py-16 text-center">
               <div className="hero-orb hero-orb-bottom" />
               <p className="eyebrow justify-center">{t('common.brand')}</p>
@@ -281,7 +286,35 @@ export function LandingPage() {
                   {t('landing.finalCta.action')}
                 </Link>
               </div>
-              <p className="mt-10 text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">
+              <div className="mt-10 grid gap-6 border-t border-[rgba(255,255,255,0.07)] pt-6 text-left md:grid-cols-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Контакты</p>
+                  <p className="mt-3 text-sm text-[var(--text-primary)]">+996555280907</p>
+                  <p className="mt-1 text-sm text-[var(--text-primary)]">support@neurobank.kg</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Адрес</p>
+                  <p className="mt-3 text-sm text-[var(--text-primary)]">
+                    проспект Чынгыз Айтматова 66
+                  </p>
+                  <p className="mt-1 text-sm text-[var(--text-muted)]">Пн-Пт: 09:00 - 18:00</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Информация</p>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                    <Link to="/support" className="text-[var(--text-primary)] hover:text-[var(--accent-cyan)]">
+                      Поддержка
+                    </Link>
+                    <Link to="/privacy-policy" className="text-[var(--text-primary)] hover:text-[var(--accent-cyan)]">
+                      Политика конфиденциальности
+                    </Link>
+                    <Link to="/terms" className="text-[var(--text-primary)] hover:text-[var(--accent-cyan)]">
+                      Пользовательское соглашение
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <p className="mt-6 text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
                 {t('landing.footer')}
               </p>
             </GlassCard>

@@ -9,9 +9,18 @@ import { PageHero } from '@/components/common/PageHero'
 import { ScoreResponsePanel } from '@/components/score/ScoreResponsePanel'
 import { AppShell } from '@/components/layout/AppShell'
 import { useAppStore } from '@/store/appStore'
-import type { ScoreFormData } from '@/types/domain'
+import {
+  SCORE_EXTENDED_KEYS,
+  defaultScoreExtendedParams,
+  type ScoreExtendedKey,
+  type ScoreFormData,
+} from '@/types/domain'
 import { calculateScore } from '@/utils/scoring'
-import { formatCurrency } from '@/utils/format'
+import { cx, formatCurrency } from '@/utils/format'
+
+type AdditionalParamItem = { title: string; text: string; placeholder: string }
+
+const EXTENDED_VALUE_MAX = 2000
 
 const TERM_OPTIONS = [6, 12, 24, 36, 60, 84]
 const AMOUNT_CHIPS = [100_000, 500_000, 1_000_000, 5_000_000]
@@ -25,6 +34,7 @@ const DEFAULT_FORM: ScoreFormData = {
   interest_rate: 16,
   past_due_30d: 0,
   inquiries_6m: 0,
+  extended: defaultScoreExtendedParams(),
 }
 
 export function ScorePage() {
@@ -33,6 +43,11 @@ export function ScorePage() {
   const [form, setForm] = useState<ScoreFormData>(DEFAULT_FORM)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<ReturnType<typeof calculateScore> | null>(null)
+  const [additionalOpen, setAdditionalOpen] = useState(false)
+
+  const additionalItems = t('client.score.additionalParamsItems', {
+    returnObjects: true,
+  }) as AdditionalParamItem[]
 
   const preview = useMemo(() => calculateScore(form), [form])
   const isComplete =
@@ -48,6 +63,14 @@ export function ScorePage() {
     setForm((current) => ({
       ...current,
       [key]: value,
+    }))
+  }
+
+  function updateExtended(key: ScoreExtendedKey, value: string) {
+    const next = value.slice(0, EXTENDED_VALUE_MAX)
+    setForm((current) => ({
+      ...current,
+      extended: { ...current.extended, [key]: next },
     }))
   }
 
@@ -122,8 +145,8 @@ export function ScorePage() {
       />
 
       <form className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]" onSubmit={handleSubmit}>
-        <GlassCard className="space-y-6">
-          <div className="grid gap-5 md:grid-cols-2">
+        <GlassCard className="space-y-7">
+          <div className="grid gap-6 md:grid-cols-2">
             <Field label={t('client.score.age')} hint={`${form.age} лет`}>
               <div className="space-y-3">
                 <input
@@ -229,42 +252,92 @@ export function ScorePage() {
             </div>
           </Field>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 md:items-stretch">
             <Field
               label={t('client.score.pastDue')}
               hint={form.past_due_30d > 2 ? 'Повышенный риск' : undefined}
+              pinInputToBottom
             >
-              <div className="stepper">
-                <button
-                  type="button"
-                  onClick={() => updateField('past_due_30d', Math.max(0, form.past_due_30d - 1))}
-                >
-                  -
-                </button>
-                <span>{form.past_due_30d}</span>
-                <button type="button" onClick={() => updateField('past_due_30d', form.past_due_30d + 1)}>
-                  +
-                </button>
-              </div>
+              <input
+                className="field-input"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                step={1}
+                value={form.past_due_30d}
+                onChange={(event) => {
+                  const n = Number(event.target.value)
+                  updateField('past_due_30d', Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0)
+                }}
+              />
             </Field>
 
             <Field
               label={t('client.score.inquiries')}
               hint={form.inquiries_6m > 4 ? 'Повышенный риск' : undefined}
+              pinInputToBottom
             >
-              <div className="stepper">
-                <button
-                  type="button"
-                  onClick={() => updateField('inquiries_6m', Math.max(0, form.inquiries_6m - 1))}
-                >
-                  -
-                </button>
-                <span>{form.inquiries_6m}</span>
-                <button type="button" onClick={() => updateField('inquiries_6m', form.inquiries_6m + 1)}>
-                  +
-                </button>
-              </div>
+              <input
+                className="field-input"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                step={1}
+                value={form.inquiries_6m}
+                onChange={(event) => {
+                  const n = Number(event.target.value)
+                  updateField('inquiries_6m', Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0)
+                }}
+              />
             </Field>
+          </div>
+
+          <div className="space-y-4 border-t border-[rgba(255,255,255,0.06)] pt-6">
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full sm:w-auto"
+              onClick={() => setAdditionalOpen((open) => !open)}
+              aria-expanded={additionalOpen}
+            >
+              {additionalOpen ? t('client.score.additionalParamsHide') : t('client.score.additionalParams')}
+            </Button>
+
+            <div
+              className={cx(
+                'grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out',
+                additionalOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+              )}
+            >
+              <div className="min-h-0">
+                <div className="space-y-5 rounded-[22px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-5 md:p-6">
+                  <p className="text-sm leading-relaxed text-[var(--text-muted)]">
+                    {t('client.score.additionalParamsIntro')}
+                  </p>
+                  <div className="grid gap-5 md:grid-cols-2">
+                    {SCORE_EXTENDED_KEYS.map((key, index) => {
+                      const item = additionalItems[index] ?? {
+                        title: key,
+                        text: '',
+                        placeholder: '',
+                      }
+                      return (
+                        <Field key={key} label={item.title} hint={item.text}>
+                          <textarea
+                            className="field-input min-h-[88px] resize-y"
+                            value={form.extended[key]}
+                            onChange={(event) => updateExtended(key, event.target.value)}
+                            placeholder={item.placeholder}
+                            rows={3}
+                            maxLength={EXTENDED_VALUE_MAX}
+                          />
+                        </Field>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <Button type="submit" disabled={!isComplete}>
